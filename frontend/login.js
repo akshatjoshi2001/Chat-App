@@ -24,6 +24,7 @@ function handleLogin()
             {
                 token = data.data.token
                 document.cookie = "token="+token+";samesite=strict"
+                document.cookie = "username="+username
                 window.location="/chat.html"
             }
 

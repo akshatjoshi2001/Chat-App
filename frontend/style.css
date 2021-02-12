@@ -229,3 +229,8 @@ background-color: rgba(0,0,0,0.2);
 margin-bottom: 15px !important;
 }
 }
+#userhello
+{
+    text-align:center;
+    margin-top: 40px;
+}

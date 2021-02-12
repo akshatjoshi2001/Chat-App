@@ -14,7 +14,33 @@
 
 window.onload = ()=>{
     document.getElementById("chatBox").style.visibility="hidden"
+   
+    document.getElementById("userhello").innerHTML="Hi <b>" + getCookieValue("username") +"</b>"
+    
 }
+
+/**
+ * Gets the value of a cookie stored in the user's browser
+ * @param {string} name - The name of the cookie
+ */
+
+function getCookieValue(name)
+{
+    arr = document.cookie.split(';')
+    for(i in arr)
+    {
+        el = arr[i]
+        
+        if(el.split("=")[0].trim()==name)
+        {
+          
+            return el.split("=")[1]
+        }
+    }
+
+    
+}
+
 
 
 /** The User class. It is used for describing the meta data of User(s) for the UI */
@@ -81,7 +107,7 @@ function setUsersList(userList)
         html+='</div>'
         html+='<div class="user_info">'
         html+='<span>'+user.name+'</span>'
-        html+='<p>'+user.desc+'</p>'
+        html+='<p>'+user.username+'</p>'
         html+='</div></div></li>'
         document.getElementById("users_list").innerHTML=document.getElementById("users_list").innerHTML+html
 

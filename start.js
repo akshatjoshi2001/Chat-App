@@ -19,26 +19,36 @@ users = {}
 
 io.on('connection',(socket)=>{
     console.log(socket)
-    let user = jwt.verify(socket.handshake.query["token"],"shaastra")
-    console.log(user)
-    if(user)
+    try
     {
-        users[user.username] = socket
-    }
-
-    socket.emit('message',{dataType:"text",data:"Hello",senderType:0})
-    socket.on('sendMessage',(data)=>{
-        console.log(data)
-        if(users.hasOwnProperty(data.sendTo))
+        let user = jwt.verify(socket.handshake.query["token"],"shaastra")
+        console.log(user)
+        if(user)
         {
-            data.sender = user.username
-            users[data.sendTo].emit("message",data)
+            users[user.username] = socket
         }
-    })
-    socket.on('disconnect',()=>{
-        delete users[user.username]
-        console.log("disconnected")
-    })
+
+        socket.emit('message',{dataType:"text",data:"Hello",senderType:0})
+        socket.on('sendMessage',(data)=>{
+            
+            if(users.hasOwnProperty(data.sendTo))
+            {
+                data.sender = user.username
+                users[data.sendTo].emit("message",data)
+            }
+        })
+        socket.on('disconnect',()=>{
+            delete users[user.username]
+            console.log("disconnected")
+        })
+    }
+    catch(err)
+    {
+        console.log("error")
+        socket.emit('wrongtoken',{})
+        socket.disconnect()
+    }
+   
 
 
 })
@@ -66,7 +76,7 @@ app.use('/api',apiRouter)
 
 // Send frontend web page and static files to user
 app.get('/',(req,res)=>{
-    res.sendFile(process.cwd() + "/frontend/login.html")
+    res.sendFile(process.cwd() + "/frontend/chat.html")
 })
 
 app.get('/:fileName',(req,res)=>{
