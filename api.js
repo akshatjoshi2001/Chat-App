@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const models = require("./models")
 const express = require("express")
-
+const jwt = require("jsonwebtoken")
 
 
 mongoose.connect('mongodb://localhost:27017/letschat', {useNewUrlParser: true, useUnifiedTopology: true});
@@ -29,26 +29,24 @@ let router = express.Router()
 
 
 router.post('/login',(req,res)=>{
-        let username = req.params.username;
-        let password = req.params.password;
-        models.User.findOne({username:username,password:password},(err,user)=>{
-            if(err)
-            {
-                return res.json(apiMessage(errors.length-1,{trace:err}))
-
-            }
-            else
-            {
+        
+        let username = req.body.username;
+        let password = req.body.password;
+        console.log(req.body)
+        models.User.findOne({username:username,password:password}).then((user)=>{
+         
                 if(user)
                 {
-                    // Send JWT
+                    token = jwt.sign({username:username},"shaastra",{expiresIn: "2 days"}) // Synchronous Event (i.e it blocks the control until process is complete)
+                    console.log(user)
+                    return res.json(apiMessage(0,{name:user.name,token:token}))
                 }
                 else
                 {
                     return res.json(apiMessage(1,{}))
                 }
 
-            }
+            
 
 
 
@@ -58,31 +56,60 @@ router.post('/login',(req,res)=>{
 })
 
 
+router.get('/search/:query',(req,res)=>{
+    query = req.params.query+".*"
+    models.User.find({username:{$regex:new RegExp(query)}}).then((users)=>{
+        searchResult = []
+        users.forEach((user)=>{
+            searchResult.push({username:user.username,name:user.name})
+        })
+        return res.json(searchResult)
+
+    })
+});
+
+
 router.post('/register',(req,res)=>{
-        let username = req.params.username;
-        let password = req.params.password;
-        let name = req.params.store;
+        let username = req.body.username;
+        let password = req.body.password;
+
+        
+        let name = req.body.name;
+        if(!username || !password || !name)
+        {
+            return res.json(apiMessage(4,{}))
+        }
+
+        if(username.trim()=="" || password.trim()=="" || name.trim()=="")
+        {
+            return res.json(apiMessage(4,{}))
+        }
          // Check if username already exists
-        models.User.find({username:username},(err,users)=>{
+         
+        models.User.find({username:username}).then((users)=>{
+            console.log(users)
             if(users.length>0)
             {
-                if(err)
-                {
-                    return res.json(apiMessage(error.length-1,{trace:err}))
-                }   
                 return res.json(apiMessage(3,{}));
             }
-       });
-        // Store inside database
+              // Store inside database
         let newUser = new models.User({username:username,password:password,name:name})
-        newUser.save().then((err)=>{
+        
+        newUser.save((err,user)=>{
             if(err)
             {
-                return res.json(apiMessage(error.length-1,{trace:err}))
+                console.log(err)
+                return res.json(apiMessage(5,{trace:err}))
             }
-            
+           
            return res.json(apiMessage(0,{}))
 
         })
+
+       });
+      
     
 });
+
+
+module.exports = router;

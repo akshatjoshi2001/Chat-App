@@ -1,15 +1,64 @@
 const express = require("express")
 
 const app = express()
-const chatServer = express()
+
 const chatServerHTTP = require("http").Server(app)
 const io = require("socket.io")(chatServerHTTP)
+const bodyParser = require("body-parser")
+const jwt = require("jsonwebtoken")
+
+
+
+
+// Chat functionality
+
+
+users = {}
+
+
+
+io.on('connection',(socket)=>{
+    console.log(socket)
+    let user = jwt.verify(socket.handshake.query["token"],"shaastra")
+    console.log(user)
+    if(user)
+    {
+        users[user.username] = socket
+    }
+
+    socket.emit('message',{dataType:"text",data:"Hello",senderType:0})
+    socket.on('sendMessage',(data)=>{
+        console.log(data)
+        if(users.hasOwnProperty(data.sendTo))
+        {
+            data.sender = user.username
+            users[data.sendTo].emit("message",data)
+        }
+    })
+    socket.on('disconnect',()=>{
+        delete users[user.username]
+        console.log("disconnected")
+    })
+
+
+})
 
 
 
 
 
-const apiRouter = express.Router() // Routes for API Calls
+
+
+// Core App functionality
+
+app.use(bodyParser.json())
+
+
+
+
+
+
+const apiRouter = require("./api")
 
 app.use('/api',apiRouter)
 
@@ -29,6 +78,6 @@ app.get('/:fileName',(req,res)=>{
 
 
 
-app.listen(8080,()=>{
+chatServerHTTP.listen(8080,()=>{
     console.log("Chat App started")
 })

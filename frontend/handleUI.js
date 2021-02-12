@@ -12,48 +12,65 @@
 */
 
 
+window.onload = ()=>{
+    document.getElementById("chatBox").style.visibility="hidden"
+}
 
 
-
-
-$(document).ready(function(){
-    $('#action_menu_btn').click(function(){
-        $('.action_menu').toggle();
-    });
-        });
 /** The User class. It is used for describing the meta data of User(s) for the UI */
 class User
 {
     /**
      * 
-     * @param {string} name - The name of the user
-     * @param {string} desc - The description of the user
+     * @param {string} name - The full name of the user
+     * @param {string} username - The username of the user
      * @param {string} profile_image - The profile picture URL
      * @param {boolean} online - If true then user is online, if false then user is offline 
      */
-    constructor(name,desc,profile_image,online)
+    constructor(name,username,profile_image,online)
     {
         this.name = name
-        this.desc = desc
-        this.profile_image = profile_image
+        this.username = username
+        if(profile_image != undefined && profile_image != "")
+        {
+            this.profile_image = profile_image
+        }
+        else
+        {
+            this.profile_image  = "/profile.png"
+        }
         this.online = online
     }
+}
+
+/**
+ * Gets the username of the currently active user
+ */
+
+function getActiveUser()
+{
+    return document.getElementById("sendTo").value;
 }
 
 
 
 
+users_map = []
 /**
  * 
  * @param {Array<User>} userList - List of Users 
  */
 function setUsersList(userList)
 {
+    
+
     document.getElementById("users_list").innerHTML = ""
     
     userList.forEach((user,i)=>{
+        users_map.push(user)
+        id = users_map.length - 1
 
-        html = '<li id="user'+i+'">'
+        html = '<li onclick="setActiveUser('+id+')" id="user'+i+'">'
         html+='<div class="d-flex bd-highlight">'
         html+='<div class="img_cont">'
         html+='    <img src="'+user.profile_image+'" class="rounded-circle user_img">'
@@ -77,32 +94,15 @@ function setUsersList(userList)
 }
 
 
-/** Sets the active user in the users' list 
- * @param {Array<User>} userList - List of users
- * @param {Number} activeIndex - The 0 based index of the active user in the list. activeIndex < size of userList
-*/
-function setActiveUserInList(userList,activeIndex)
+function setActiveUser(id)
 {
-    if(userList.length <= activeIndex)
-    {
-        console.error("UI Error: activeIndex cannot be greater than size of userList")
-    }
-    else
-    {
-        userList.forEach((user,index)=>{
-
-            if(index==activeIndex)
-            {
-                document.getElementById("user"+index).setAttribute("class","active")
-            }
-            else
-            {
-                document.getElementById("user"+index).setAttribute("class","")
-            }
-
-
-        })
-    }
+    user = users_map[id]
+    clearConversation()
+    document.getElementById("chatBox").style.visibility="visible"
+    
+    setConversationTop(user.name,user.username,user.online,user.profile_image)
+    document.getElementById("sendTo").value=user.username
+    
 }
 
 
@@ -119,7 +119,7 @@ function clearConversation()
 /**
  * Set attributes on the top bar of the conversation
  * @param {string} title - The title bar of the conversation
- * @param {string} desc  - The description of the conversation (May include stuff like number of unread messages in the conversation)
+ * @param {string} desc  - The description of the conversation (May include stuff like number of unread messages or the user's username in the conversation)
  * @param {string} profile_image - The URL of the profile picture of the reciever in the conversation
  * @param {boolean} online - If true then reciever is online, if false then reciever is offline 
  */
@@ -177,6 +177,7 @@ function addMessageBySender(message,date,image)
  * @param {string} date - Date and Time when the message was recieved
  * @param {string} image -  URL of the profile picture of the reciever
  */
+
 function addMessageByReciever(message,date,image)
 {
     
@@ -193,4 +194,6 @@ function addMessageByReciever(message,date,image)
 
     document.getElementById("messages").innerHTML= document.getElementById("messages").innerHTML+html
 
-}      
+}
+
+

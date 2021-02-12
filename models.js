@@ -20,7 +20,7 @@ let chatSchema  = mongoose.Schema({
     datetime:Date
 })
 
-const User = mongoose.model(usersSchema,"User")
-const Chat = mongoose.model(chatSchema,"Chat")
+const User = mongoose.model("User",usersSchema)
+const Chat = mongoose.model("Chat",chatSchema)
 
 module.exports = {User:User,Chat:Chat}
