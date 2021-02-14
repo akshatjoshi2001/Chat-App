@@ -1,6 +1,6 @@
 # Make a real time chat app - Shaastra Workshop 2021
 
-This reporsitory contains the full code for the chat app for the workshop.
+This repository contains the full code for the chat app for the workshop.
 
 The chat app supports real time messaging and file transfer.
 
