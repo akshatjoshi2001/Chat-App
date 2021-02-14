@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 const models = require("./models")
 const express = require("express")
 const jwt = require("jsonwebtoken")
-
+const crypto = require("crypto")
 
 mongoose.connect('mongodb://localhost:27017/letschat', {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -32,8 +32,10 @@ router.post('/login',(req,res)=>{
         
         let username = req.body.username;
         let password = req.body.password;
+        const hash = crypto.createHash('sha256').update(password).digest('base64');
+
         console.log(req.body)
-        models.User.findOne({username:username,password:password}).then((user)=>{
+        models.User.findOne({username:username,password:hash}).then((user)=>{
          
                 if(user)
                 {
@@ -73,7 +75,7 @@ router.post('/register',(req,res)=>{
         let username = req.body.username;
         let password = req.body.password;
 
-        
+        const hash = crypto.createHash('sha256').update(password).digest('base64');
         let name = req.body.name;
         if(!username || !password || !name)
         {
@@ -93,7 +95,7 @@ router.post('/register',(req,res)=>{
                 return res.json(apiMessage(3,{}));
             }
               // Store inside database
-        let newUser = new models.User({username:username,password:password,name:name})
+        let newUser = new models.User({username:username,password:hash,name:name})
         
         newUser.save((err,user)=>{
             if(err)

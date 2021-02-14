@@ -12,10 +12,25 @@
 */
 
 
+
+/**
+ * Clears cookies. And logs out the user
+ */
+function logout()
+{
+    document.cookie="token= ;username= ";
+    window.location="/";
+}
+
+
 window.onload = ()=>{
     document.getElementById("chatBox").style.visibility="hidden"
    
-    document.getElementById("userhello").innerHTML="Hi <b>" + getCookieValue("username") +"</b>"
+    document.getElementById("userhello").innerHTML="Hi <b>" + getCookieValue("username") +"</b><br /> <a class='logout' href='#' onclick='logout()'>Logout</a>"
+    if(getCookieValue("username") == undefined)
+    {
+        window.location="/login.html"
+    }
     
 }
 
@@ -221,5 +236,24 @@ function addMessageByReciever(message,date,image)
     document.getElementById("messages").innerHTML= document.getElementById("messages").innerHTML+html
 
 }
+/**
+ * 
+ * @param {string} url - URL of the file
+ * @param {string} date - Date and Time when the message was recieved
+ * @param {string} image -  URL of the profile picture of the reciever
+ */
 
+function addFileByReciever(url,date,image)
+{
+    html = "Hey! You recieved a file: <a href='"+url+"'>Download it</a>"
+    addMessageByReciever(html,date,image)
+}
 
+/**
+ * 
+ */
+function showUploadArea()
+{
+    document.getElementById("fileBox").click()
+    document.getElementById("uploadArea").style.visibility="visible"
+}

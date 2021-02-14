@@ -234,3 +234,7 @@ margin-bottom: 15px !important;
     text-align:center;
     margin-top: 40px;
 }
+#uploadArea
+{
+    visibility: hidden;
+}

@@ -77,8 +77,12 @@
 								<div class="input-group-append">
 									<input type="file" style="display: none;" id="fileBox">
 									
-									<button onclick='document.getElementById("fileBox").click()' class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
-									<button onclick='uploadFile()' class="input-group-text attach_btn"><i class="fas fa-upload"></i></span>
+									<button onclick='showUploadArea()' class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></button>
+									
+									
+										<button onclick='uploadFile()' id="uploadArea" class="input-group-text"><i class="fas fa-upload"></i></button>
+										<span id="uploadStatus"></span>
+									
 								
 									</div>
 								<textarea id="messageBox" class="form-control type_msg" placeholder="Type your message..."></textarea>

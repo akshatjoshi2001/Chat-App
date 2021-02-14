@@ -1,12 +1,13 @@
-function handleLogin()
+function handleRegister()
 {
     username = document.getElementById("username").value
     password = document.getElementById("password").value
+    name = document.getElementById("name").value
 
 
-    fetch("/api/login",{
+    fetch("/api/register",{
         method:'POST',
-        body:JSON.stringify({username:username,password:password}),
+        body:JSON.stringify({username:username,password:password,name:name}),
         headers: {
             'Content-Type': 'application/json'
           }
@@ -22,10 +23,8 @@ function handleLogin()
             }
             else
             {
-                token = data.data.token
-                document.cookie = "token="+token+";samesite=strict"
-                document.cookie = "username="+username+";samesite=strict"
-                window.location="/chat.html"
+                alert("Successfully Registered!")
+                window.location="/login.html"
             }
 
         })
